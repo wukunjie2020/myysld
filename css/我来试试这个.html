@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #pagination {
+            text-align: center;
+        }
+        
+        #table {
+            width: 800px;
+            margin: 50px auto;
+        }
+        
+        #table th {
+            height: 35px;
+        }
+        
+        #title {
+            text-align: center;
+        }
+        
+        button {
+            padding: 5px;
+            box-shadow: 0 0 5px #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="title">
+        <h1>表格标题</h1>
+    </div>
+    <table id="table" border="1"></table>
+
+    <div id="pagination">
+        <button id="prev">《</button>
+        <span id="pages"></span>
+        <button id="next">》</button>
+    </div>
+</body>
+
+</html>
+<script>
+    const table = document.getElementById('table');
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const pages = document.getElementById('pages');
+    //默认设定每页十人
+    let num1 = 10;
+    //定义一个变量保存每页真实应该展示的数量
+    let num2;
+    //默认展示第一页
+    let page = 1;
+</script>

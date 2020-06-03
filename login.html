@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title></title><link rel="stylesheet" type="text/css" href="css/login.css"><style type="text/css">body,html{height:100%}</style></head><body style="background-color:#1d2340"><div class="login"><h4>会员登录</h4><div class="form-item"><input type="text" placeholder="用户名" class="form-text" id="name"></div><div class="form-item"><input type="password" placeholder="密码" class="form-text" id="pass"></div><p><a href="" class="text12">忘记密码</a></p><div class="submitbtn"><input type="button" value="会员登录" class="form-btn" id="loginbtn"> <span id="logMsg"></span></div><div>还没有账号？<a href="register.html">现在注册</a></div></div></body></html><script src="js/jquery-3.2.1.min.js"></script><script src="js/cookieTools.js"></script><script>document.addEventListener("keyup", function(e) {
+            if (e.keyCode == 13) {
+                $.post("login.php", {
+                        "username": $("#name").val(),
+                        "userpass": $("#pass").val()
+                    },
+                    function(data) {
+                        if (data == "success") {
+                            $("#logMsg").html("登录成功!2秒后跳到首页")
+                            saveCookie("username", $("#name").val());
+                            setTimeout(() => {
+                                location.href = "index.html";
+                            }, 2000)
+                        } else if (data == "fail") {
+                            $("#logMsg").html("登录失败")
+                        } else {
+                            $("#logMsg").html("sorry,服务器出错了！")
+                        }
+                    })
+            }
+        }),
+
+        $("#loginbtn").click(function() {
+            $.post("login.php", {
+                    "username": $("#name").val(),
+                    "userpass": $("#pass").val()
+                },
+                function(data) {
+                    if (data == "success") {
+                        $("#logMsg").html("登录成功!2秒后跳到首页")
+                        saveCookie("username", $("#name").val());
+                        setTimeout(() => {
+                            location.href = "index.html";
+                        }, 2000)
+                    } else if (data == "fail") {
+                        $("#logMsg").html("登录失败")
+                    } else {
+                        $("#logMsg").html("sorry,服务器出错了！")
+                    }
+                })
+        })</script>

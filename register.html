@@ -1,0 +1,203 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title></title><link rel="stylesheet" type="text/css" href="css/registe.css"><style type="text/css">body,html{height:100%}</style></head><body style="background-color:#1d2340"><div class="registe"><h4>加入会员</h4><div class="form-item">用&nbsp;&nbsp;户&nbsp;&nbsp;名：<input type="text" placeholder="2-6位的数字、字母、下划线组合" class="form-text" id="name"><span id="nameMsg"></span></div><div class="form-item">电子邮箱：<input type="email" placeholder="xxxxx@xxx.(com/cn/net)" class="form-text" id="email"><span id="emailMsg"></span></div><div class="form-item">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码：<input type="password" placeholder="6-16位的数字字母组合" class="form-text" id="pass"> <span id="passMsg"></span></div><div class="form-item">手机号码：<input type="text" placeholder="以1开头，11为数字 " class="form-text" id="phonenum"><span id="phoneMsg"></span></div><div class="agreement"><label><input type="checkbox" class="pawCHK agree"> <span class="text12">我已阅读和了解雅诗兰黛及本网站的<a href="">条款条件</a>和<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">隐私政策</a>，并且同意接受其中所有的条款。</span></label></div><div><label><input type="checkbox" class="pawCHK"> <span class="text12">我不同意雅诗兰黛及所在雅诗兰黛集团向我发送<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;邮件、彩信或致电。</span></label></div><div class="submitbtn"><input type="button" value="提交注册 " class="form-btn" id="regbtn"> <span id="regMsg"></span></div><div>已经注册？<a href="login.html">请登录</a></div></div></body></html><script src="js/jquery-3.2.1.min.js"></script><script>//1.前端的表单验证
+    function isTest() {
+        return isUserName() && isEmail() && isPass() && isPhone();
+    }
+
+    //(1)用户名的前端验证
+    function isUserName() {
+        //非空判断
+        if ($("#name").val() == "") {
+            return false;
+        }
+        //格式判断(正则判断)
+        //2-6位的数字、字母、下划线组合
+        let reg = /^[a-zA-Z\d_]{2,6}$/;
+        if (!reg.test($("#name").val())) {
+            return false;
+        }
+        return true;
+    }
+
+    //(2)邮箱的前端验证
+    function isEmail() {
+        //非空判断
+        if ($("#email").val() == "") {
+            return false;
+        }
+        //格式判断
+        //xxxxx@xxx.(com/cn/net)
+        let reg = /^\w+@\w+\.(com|cn|net)$/;
+        if (!reg.test($("#email").val())) {
+            return false;
+        }
+        return true;
+    }
+
+    //(3)密码的前端判断
+    function isPass() {
+        //非空判断
+        if ($("#pass").val() == "") {
+            return false;
+        }
+        //格式判断
+        //6-16位的数字字母组合
+        let reg = /^[a-zA-Z\d]{6,16}$/;
+        if (!reg.test($("#pass").val())) {
+            return false;
+        }
+        return true;
+    }
+
+    //(4)手机号码的前端验证
+    function isPhone() {
+        //非空判断
+        if ($("#phonenum").val() == "") {
+            return false;
+        }
+        //格式判断
+        //以1开头，11为数字
+        let reg = /^1\d{10}$/;
+        if (!reg.test($("#phonenum").val())) {
+            return false;
+        }
+        return true;
+    }
+
+    //2.后端验证
+    let hasUser = false;
+
+    function hasUserBack() {
+        //后端验证用户名是否已经存在
+        $.get("checkUser.php", {
+            "username": $("#name").val()
+        }, function(data) {
+            if (data == "1") {
+                $("#nameMsg").html("√");
+                hasUser = false;
+            } else if (data == "0") {
+                $("#nameMsg").html("×");
+                hasUser = true;
+            }
+        })
+    }
+
+    $(function() {
+        $("#name").blur(function() {
+            //1.前端验证
+            if (isUserName() == false) {
+                $("#nameMsg").html("您的用户名格式输入不正确");
+                return;
+            }
+            //2.后端验证
+            hasUserBack();
+        });
+
+        $("#email").blur(function() {
+            if (isEmail() == false) {
+                $("#emailMsg").html("您的邮箱格式不正确 ")
+                return;
+            } else {
+                $("#emailMsg").html("√")
+            }
+        });
+
+        $("#pass").blur(function() {
+            if (isPass() == false) {
+                $("#passMsg").html("您的密码格式不正确")
+                return;
+            } else {
+                $("#passMsg").html("√")
+            }
+        });
+
+        $("#phonenum").blur(function() {
+            if (isPhone() == false) {
+                $("#phoneMsg").html("您的电话号码格式不正确")
+                return;
+            } else {
+                $("#phoneMsg").html("√")
+            }
+        });
+
+        $("#regbtn").click(function() {
+            //1.前端验证
+            if (isTest() == false) {
+                $("#regMsg").html("您的信息输入不完整，请补充完整");
+                return;
+            }
+            var agree = $(".agree")
+            if (agree.is(':checked') == false) {
+                $("#regMsg").html("您没有同意我们的条款哦！");
+                return;
+            }
+            //2.后端验证用户名是否存在
+            if (hasUser) {
+                return;
+            }
+
+            $.post("addUser.php", {
+                "username": $("#name").val(),
+                "email": $("#email").val(),
+                "phonenum": $("#phonenum").val(),
+                "userpass": $("#pass").val()
+            }, function(data) {
+                if (data == "success") {
+                    $("#regMsg").html("注册成功！2秒后为您跳到登录界面");
+                    setTimeout(() => {
+                        location.href = "login.html ";
+                    }, 2000)
+                } else if (data == "fail") {
+                    $("#regMsg").html("注册失败!");
+                    $("#regMsg").css({
+                        "color": "red"
+                    });
+                } else {
+                    $("#regMsg").css({
+                        "color": "red"
+                    });
+                    $("#regMsg").html("sorry，服务器出错了!");
+                }
+            })
+        })
+    })
+    document.addEventListener("keyup", function(e) {
+        if (e.keyCode == 13) {
+            if (isTest() == false) {
+                $("#regMsg").html("您的信息输入不完整，请补充完整");
+                return;
+            }
+            var agree = $(".agree")
+            if (agree.is(':checked') == false) {
+                $("#regMsg").html("您没有同意我们的条款哦！");
+                return;
+            }
+            //2.后端验证用户名是否存在
+            if (hasUser) {
+                return;
+            }
+
+            $.post("addUser.php", {
+                "username": $("#name").val(),
+                "email": $("#email").val(),
+                "phonenum": $("#phonenum").val(),
+                "userpass": $("#pass").val()
+            }, function(data) {
+                if (data == "success") {
+                    $("#regMsg").html("注册成功！2秒后为您跳到登录界面");
+                    setTimeout(() => {
+                        location.href = "login.html ";
+                    }, 2000)
+                } else if (data == "fail") {
+                    $("#regMsg").html("注册失败!");
+                    $("#regMsg").css({
+                        "color": "red"
+                    });
+                } else {
+                    $("#regMsg").css({
+                        "color": "red"
+                    });
+                    $("#regMsg").html("sorry，服务器出错了!");
+                }
+            })
+        }
+    })</script>
