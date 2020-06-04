@@ -1,8 +1,1 @@
-
-function getStyle(domObj,attr){
-    if(domObj.currentStyle){
-        return domObj.currentStyle[attr];
-    }else{
-        return  window.getComputedStyle(domObj)[attr];
-    }
-}
+"use strict";function getStyle(t,e){return t.currentStyle?t.currentStyle[e]:window.getComputedStyle(t)[e]}
